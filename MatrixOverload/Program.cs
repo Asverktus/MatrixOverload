@@ -44,6 +44,11 @@ namespace MatrixCalculator
 
   public class SquareMatrix : IComparable<SquareMatrix>, IEquatable<SquareMatrix>, ICloneable
   {
+    private const int NextRowOffset = 1;
+    private const int MinorSizeOffset = 1;
+    private const int HashCodeMultiplier = 31;
+    private const int LastElementOffset = 1;
+
     private double[,] _elements;
     private int _size;
     private double? _cachedDeterminant;
@@ -511,7 +516,7 @@ namespace MatrixCalculator
           pivotValue = tempMatrix[column, column];
           determinantValue *= pivotValue;
 
-          for (int row = column + 1; row < _size; ++row)
+          for (int row = column + NextRowOffset; row < _size; ++row)
           {
             double factor;
             factor = tempMatrix[row, column] / pivotValue;
@@ -553,7 +558,7 @@ namespace MatrixCalculator
           for (int depth = 0; depth < _size; ++depth)
           {
             SquareMatrix minor;
-            minor = new SquareMatrix(_size - 1);
+            minor = new SquareMatrix(_size - MinorSizeOffset);
 
             for (int row = 0, minorRow = 0; row < _size; ++row)
             {
@@ -648,7 +653,7 @@ namespace MatrixCalculator
       {
         for (int col = 0; col < Math.Min(_size, 3); ++col)
         {
-          hashCode = hashCode * 31 + _elements[row, col].GetHashCode();
+          hashCode = hashCode * HashCodeMultiplier + _elements[row, col].GetHashCode();
         }
       }
 
@@ -670,7 +675,7 @@ namespace MatrixCalculator
         {
           stringBuilder.Append($" {_elements[row, col],8:F4}");
 
-          if (col < _size - 1)
+          if (col < _size - LastElementOffset)
           {
             stringBuilder.Append(",");
           }
@@ -750,6 +755,7 @@ namespace MatrixCalculator
 
         int userChoice;
         bool parseResult;
+
         parseResult = int.TryParse(userChoiceInput, out userChoice);
 
         if (!parseResult)
@@ -836,6 +842,7 @@ namespace MatrixCalculator
 
       int matrixSize;
       bool parseResult;
+
       parseResult = int.TryParse(sizeInput, out matrixSize);
 
       if (!parseResult || matrixSize <= 0)
@@ -931,6 +938,7 @@ namespace MatrixCalculator
 
       double scalarValue;
       bool parseResult;
+
       parseResult = double.TryParse(scalarInput, out scalarValue);
 
       if (!parseResult)
