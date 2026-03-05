@@ -44,11 +44,6 @@ namespace MatrixCalculator
 
   public class SquareMatrix : IComparable<SquareMatrix>, IEquatable<SquareMatrix>, ICloneable
   {
-    private const int NextRowOffset = 1;
-    private const int MinorSizeOffset = 1;
-    private const int HashCodeMultiplier = 31;
-    private const int LastElementOffset = 1;
-
     private double[,] _elements;
     private int _size;
     private double? _cachedDeterminant;
@@ -306,7 +301,10 @@ namespace MatrixCalculator
         throw new MatrixException("Cannot divide null matrix");
       }
 
-      if (Math.Abs(scalar) < 1e-10)
+      double epsilon;
+      epsilon = 1e-10;
+
+      if (Math.Abs(scalar) < epsilon)
       {
         throw new MatrixException("Division by zero");
       }
@@ -392,11 +390,14 @@ namespace MatrixCalculator
         return false;
       }
 
+      double epsilon;
+      epsilon = 1e-10;
+
       for (int row = 0; row < matrix._size; ++row)
       {
         for (int col = 0; col < matrix._size; ++col)
         {
-          if (Math.Abs(matrix[row, col]) < 1e-10)
+          if (Math.Abs(matrix[row, col]) < epsilon)
           {
             return false;
           }
@@ -413,11 +414,14 @@ namespace MatrixCalculator
         return true;
       }
 
+      double epsilon;
+      epsilon = 1e-10;
+
       for (int row = 0; row < matrix._size; ++row)
       {
         for (int col = 0; col < matrix._size; ++col)
         {
-          if (Math.Abs(matrix[row, col]) < 1e-10)
+          if (Math.Abs(matrix[row, col]) < epsilon)
           {
             return true;
           }
@@ -479,6 +483,9 @@ namespace MatrixCalculator
         int sign;
         sign = 1;
 
+        double epsilon;
+        epsilon = 1e-10;
+
         for (int column = 0; column < _size; ++column)
         {
           int pivotRow;
@@ -486,7 +493,7 @@ namespace MatrixCalculator
 
           for (int row = column; row < _size; ++row)
           {
-            if (Math.Abs(tempMatrix[row, column]) > 1e-10)
+            if (Math.Abs(tempMatrix[row, column]) > epsilon)
             {
               pivotRow = row;
               break;
@@ -516,7 +523,10 @@ namespace MatrixCalculator
           pivotValue = tempMatrix[column, column];
           determinantValue *= pivotValue;
 
-          for (int row = column + NextRowOffset; row < _size; ++row)
+          int nextRowOffset;
+          nextRowOffset = 1;
+
+          for (int row = column + nextRowOffset; row < _size; ++row)
           {
             double factor;
             factor = tempMatrix[row, column] / pivotValue;
@@ -545,7 +555,10 @@ namespace MatrixCalculator
         double det;
         det = determinant;
 
-        if (Math.Abs(det) < 1e-10)
+        double epsilon;
+        epsilon = 1e-10;
+
+        if (Math.Abs(det) < epsilon)
         {
           throw new SingularMatrixException("finding inverse");
         }
@@ -553,12 +566,15 @@ namespace MatrixCalculator
         SquareMatrix inverseMatrix;
         inverseMatrix = new SquareMatrix(_size);
 
+        int minorSizeOffset;
+        minorSizeOffset = 1;
+
         for (int index = 0; index < _size; ++index)
         {
           for (int depth = 0; depth < _size; ++depth)
           {
             SquareMatrix minor;
-            minor = new SquareMatrix(_size - MinorSizeOffset);
+            minor = new SquareMatrix(_size - minorSizeOffset);
 
             for (int row = 0, minorRow = 0; row < _size; ++row)
             {
@@ -600,7 +616,10 @@ namespace MatrixCalculator
       double otherDeterminant;
       otherDeterminant = other.determinant;
 
-      if (Math.Abs(thisDeterminant - otherDeterminant) < 1e-10)
+      double epsilon;
+      epsilon = 1e-10;
+
+      if (Math.Abs(thisDeterminant - otherDeterminant) < epsilon)
       {
         return 0;
       }
@@ -630,11 +649,14 @@ namespace MatrixCalculator
         return false;
       }
 
+      double epsilon;
+      epsilon = 1e-10;
+
       for (int row = 0; row < _size; ++row)
       {
         for (int col = 0; col < _size; ++col)
         {
-          if (Math.Abs(_elements[row, col] - other._elements[row, col]) > 1e-10)
+          if (Math.Abs(_elements[row, col] - other._elements[row, col]) > epsilon)
           {
             return false;
           }
@@ -649,11 +671,14 @@ namespace MatrixCalculator
       int hashCode;
       hashCode = _size.GetHashCode();
 
+      int hashMultiplier;
+      hashMultiplier = 31;
+
       for (int row = 0; row < Math.Min(_size, 3); ++row)
       {
         for (int col = 0; col < Math.Min(_size, 3); ++col)
         {
-          hashCode = hashCode * HashCodeMultiplier + _elements[row, col].GetHashCode();
+          hashCode = hashCode * hashMultiplier + _elements[row, col].GetHashCode();
         }
       }
 
@@ -667,6 +692,9 @@ namespace MatrixCalculator
 
       stringBuilder.AppendLine($"Square Matrix {_size}x{_size}:");
 
+      int lastElementOffset;
+      lastElementOffset = 1;
+
       for (int row = 0; row < _size; ++row)
       {
         stringBuilder.Append("[");
@@ -675,7 +703,7 @@ namespace MatrixCalculator
         {
           stringBuilder.Append($" {_elements[row, col],8:F4}");
 
-          if (col < _size - LastElementOffset)
+          if (col < _size - lastElementOffset)
           {
             stringBuilder.Append(",");
           }
@@ -754,8 +782,8 @@ namespace MatrixCalculator
         userChoiceInput = Console.ReadLine();
 
         int userChoice;
-        bool parseResult;
 
+        bool parseResult;
         parseResult = int.TryParse(userChoiceInput, out userChoice);
 
         if (!parseResult)
@@ -841,8 +869,8 @@ namespace MatrixCalculator
       sizeInput = Console.ReadLine();
 
       int matrixSize;
-      bool parseResult;
 
+      bool parseResult;
       parseResult = int.TryParse(sizeInput, out matrixSize);
 
       if (!parseResult || matrixSize <= 0)
@@ -937,8 +965,8 @@ namespace MatrixCalculator
       scalarInput = Console.ReadLine();
 
       double scalarValue;
-      bool parseResult;
 
+      bool parseResult;
       parseResult = double.TryParse(scalarInput, out scalarValue);
 
       if (!parseResult)
